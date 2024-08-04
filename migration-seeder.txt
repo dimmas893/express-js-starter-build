@@ -1,0 +1,25 @@
+npm install --save sequelize
+npm install --save-dev sequelize-cli
+npx sequelize-cli init
+
+#1 migration
+npx sequelize-cli migration:generate --name nama-migrasi 
+
+#all migration
+npx sequelize-cli db:migrate
+
+#undo migration terakhir
+npx sequelize-cli db:migrate:undo
+
+#undo all
+npx sequelize-cli db:migrate:undo:all
+
+#faker
+npm install faker --save-dev
+
+#seeder 1
+npx sequelize-cli seed:generate --name nama-seeder
+
+#seeder all
+npx sequelize-cli db:seed:all
+

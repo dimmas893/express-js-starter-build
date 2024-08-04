@@ -1,0 +1,41 @@
+{
+  "name": "starter-build-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon",
+    "migrate": "npx sequelize-cli db:migrate",
+    "rollback": "npx sequelize-cli db:migrate:undo:all",
+    "seed": "npx sequelize-cli db:seed:all",
+    "drop": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate:undo:all",
+    "reset": "npm run rollback && npm run migrate && npm run seed",
+    "up": "npm run build && npm run drop && npm run migrate && npm run seed"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "faker": "^6.6.6",
+    "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
+    "mysql2": "^3.11.0",
+    "sequelize": "^6.37.3",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^22.1.0",
+    "@types/sequelize": "^4.28.20",
+    "nodemon": "^3.1.4",
+    "sequelize-cli": "^6.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}
