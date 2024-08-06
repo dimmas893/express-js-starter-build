@@ -9,11 +9,7 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "paths": {
-      "@migrations/*": ["database/migrations/*"],
-      "@seeders/*": ["database/seeders/*"]
-    }
   },
-  "include": ["src/**/*", "app/models/**/*", "database/seeders/**/*", "database/migrations/**/*"],
+  "include": ["src/**/*", "app/Models/**/*", "database/seeders/**/*", "database/migrations/**/*"],
   "exclude": ["node_modules"]
 }

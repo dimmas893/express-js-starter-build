@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import SecurityAsymmetricKey from '../../models/securityasymmetrickey';
+import SecurityAsymmetricKey from '../../Models/securityasymmetrickey';
 import { generateKeyPair, hashSecret, saveKeyToFile, validateSecret } from '../../Helpers/cryptoHelper';
 import ResponseHelper from '../../Helpers/responseHelper';
 import { OK, UNAUTHORIZED, SERVER_GENERAL_ERROR } from '../../Helpers/responseCode';

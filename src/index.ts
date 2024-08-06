@@ -1,5 +1,5 @@
 import express from 'express';
-import sequelize from '../app/models';
+import sequelize from '../app/Models';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import securityRoutes from '../routes/securityasymmetrickey';

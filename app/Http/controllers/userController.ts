@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import User from '../../models/user';
+import User from '../../Models/user';
 import ResponseHelper from '../../Helpers/responseHelper';
 import { paginateArray } from '../../Helpers/paginationHelper';
 import { formatData, renameKeys } from '../../Helpers/dataFormatterHelper';
