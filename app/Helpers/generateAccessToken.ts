@@ -1,27 +1,34 @@
 import { Request, Response } from 'express';
 import SecurityAsymmetricKey from '../models/securityasymmetrickey';
-import ResponseHelper from '../helpers/responseHelper';
-import { validateSecret } from '../helpers/cryptoHelper';
+import ResponseHelper from './responseHelper';
+import { validateSecret } from './cryptoHelper';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
 import {
   OK,
   UNAUTHORIZED,
   SERVER_GENERAL_ERROR,
-} from '../helpers/responseCode';
+} from './responseCode';
+
 
 const generateAccessToken = async (req: Request, res: Response) => {
   try {
-    const { apiKey, secret, audience, privateKey } = req.body;
-    console.log('Request to generate access token:', { apiKey, secret, audience, privateKey });
+    const { api_key, secret, audience, private_key } = req.body;
+    console.log('Request to generate access token:', { api_key, secret, audience, private_key });
 
-    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: apiKey } });
+    if (!api_key) {
+      console.error('API key is missing');
+      return ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, 'API key is missing');
+    }
+
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: api_key } });
+
     if (!key) {
-      console.error('API key not found:', apiKey);
+      console.error('API key not found:', api_key);
       return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid apiKey');
     }
 
-    const isValid = await validateSecret(apiKey, secret, privateKey);
+    const isValid = await validateSecret(api_key, secret, private_key);
     if (!isValid) {
       console.error('Secret or private key does not match.');
       return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid secret or private key');
@@ -29,7 +36,7 @@ const generateAccessToken = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       {
-        iss: apiKey,
+        iss: api_key,
         aud: audience,
         exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hour
         iat: Math.floor(Date.now() / 1000),
@@ -46,5 +53,6 @@ const generateAccessToken = async (req: Request, res: Response) => {
     ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
   }
 };
+
 
 export { generateAccessToken };

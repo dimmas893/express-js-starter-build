@@ -14,6 +14,6 @@
       "@seeders/*": ["database/seeders/*"]
     }
   },
-  "include": ["src/**/*", "models/**/*", "database/seeders/**/*", "database/migrations/**/*"],
+  "include": ["src/**/*", "app/models/**/*", "database/seeders/**/*", "database/migrations/**/*"],
   "exclude": ["node_modules"]
 }

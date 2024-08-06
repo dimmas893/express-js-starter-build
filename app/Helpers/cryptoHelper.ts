@@ -36,8 +36,8 @@ const readKeyFromFile = async (filepath: string) => {
 };
 
 const validateSecret = async (apiKey: string, secret: string, privateKey: string): Promise<boolean> => {
-  const secretKeyPath = path.join('logs', 'credentials', apiKey, 'secret.key');
-  const privateKeyPath = path.join('logs', 'credentials', apiKey, 'private.key');
+  const secretKeyPath = path.join('storage', 'credentials', apiKey, 'secret.key');
+  const privateKeyPath = path.join('storage', 'credentials', apiKey, 'private.key');
 
   try {
     const storedSecret = await readFile(secretKeyPath, 'utf-8');

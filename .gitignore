@@ -3,3 +3,4 @@
 /dist
 /logs/credentials
 package-lock.json
+/storage

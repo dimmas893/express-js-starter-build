@@ -13,6 +13,11 @@ class SecurityAsymmetricKey extends Model {
 }
 
 SecurityAsymmetricKey.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   api_key: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -42,7 +47,8 @@ SecurityAsymmetricKey.init({
   },
 }, {
   sequelize,
-  modelName: 'security_asymmetric_keys',
+  modelName: 'SecurityAsymmetricKey',
+  tableName: 'security_asymmetric_keys',
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at',

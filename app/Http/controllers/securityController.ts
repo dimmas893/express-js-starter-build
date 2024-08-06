@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import SecurityAsymmetricKey from '../models/securityasymmetrickey';
-import { generateKeyPair, hashSecret, saveKeyToFile, validateSecret } from '../helpers/cryptoHelper';
-import ResponseHelper from '../helpers/responseHelper';
-import { OK, UNAUTHORIZED, SERVER_GENERAL_ERROR } from '../helpers/responseCode';
+import SecurityAsymmetricKey from '../../models/securityasymmetrickey';
+import { generateKeyPair, hashSecret, saveKeyToFile, validateSecret } from '../../Helpers/cryptoHelper';
+import ResponseHelper from '../../Helpers/responseHelper';
+import { OK, UNAUTHORIZED, SERVER_GENERAL_ERROR } from '../../Helpers/responseCode';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
@@ -25,9 +25,9 @@ const generateAsymmetricKey = async (req: Request, res: Response) => {
       updated_at: new Date(),
     });
 
-    await saveKeyToFile(privateKey, `logs/credentials/${apiKey}/private.key`);
-    await saveKeyToFile(publicKey, `logs/credentials/${apiKey}/public.key`);
-    await saveKeyToFile(hashedSecret, `logs/credentials/${apiKey}/secret.key`);
+    await saveKeyToFile(privateKey, `storage/credentials/${apiKey}/private.key`);
+    await saveKeyToFile(publicKey, `storage/credentials/${apiKey}/public.key`);
+    await saveKeyToFile(hashedSecret, `storage/credentials/${apiKey}/secret.key`);
 
     ResponseHelper.generate(res, OK, { items: { privateKey, publicKey, secret, apiKey } });
   } catch (error) {
@@ -38,14 +38,14 @@ const generateAsymmetricKey = async (req: Request, res: Response) => {
 
 const generateAccessToken = async (req: Request, res: Response) => {
   try {
-    const { apiKey, secret, audience, privateKey } = req.body;
-    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: apiKey } });
+    const { api_key, secret, audience, private_key } = req.body;
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: api_key } });
     if (!key) {
-      console.error('API key not found:', apiKey);
+      console.error('API key not found:', api_key);
       return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid apiKey');
     }
 
-    const isValid = await validateSecret(apiKey, secret, privateKey);
+    const isValid = await validateSecret(api_key, secret, private_key);
     if (!isValid) {
       console.error('Secret or private key does not match.');
       return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid secret or private key');
@@ -53,7 +53,7 @@ const generateAccessToken = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       {
-        iss: apiKey,
+        iss: api_key,
         aud: audience,
         exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hour
         iat: Math.floor(Date.now() / 1000),

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import User from '../models/user';
-import ResponseHelper from '../helpers/responseHelper';
-import { paginateArray } from '../helpers/paginationHelper';
-import { formatData, renameKeys } from '../helpers/dataFormatterHelper';
-import { OK, SERVER_GENERAL_ERROR, INVALID_FIELD_FORMAT } from '../helpers/responseCode';
+import User from '../../models/user';
+import ResponseHelper from '../../Helpers/responseHelper';
+import { paginateArray } from '../../Helpers/paginationHelper';
+import { formatData, renameKeys } from '../../Helpers/dataFormatterHelper';
+import { OK, SERVER_GENERAL_ERROR, INVALID_FIELD_FORMAT } from '../../Helpers/responseCode';
 import { Op } from 'sequelize';
 
 // Fungsi untuk membuat pengguna baru

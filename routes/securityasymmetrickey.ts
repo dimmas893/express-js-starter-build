@@ -4,7 +4,7 @@ import {
   generateAccessToken,
   verifyAccessToken,
   getCredential
-} from '../controllers/securityController';
+} from '../app/Http/controllers/securityController';
 
 const router = Router();
 
