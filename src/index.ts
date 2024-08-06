@@ -2,7 +2,7 @@ import express from 'express';
 import sequelize from '../models';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import securityRoutes from './routes/securityasymmetrickey';
+import securityRoutes from '../routes/securityasymmetrickey';
 
 dotenv.config();
 

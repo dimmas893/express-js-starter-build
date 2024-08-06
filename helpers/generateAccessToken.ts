@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import SecurityAsymmetricKey from '../../models/securityasymmetrickey';
+import SecurityAsymmetricKey from '../models/securityasymmetrickey';
 import { generateErrorResponse, generateSuccessResponse } from '../helpers/responseHelper';
 import { validateSecret } from '../helpers/cryptoHelper';
 import * as jwt from 'jsonwebtoken';

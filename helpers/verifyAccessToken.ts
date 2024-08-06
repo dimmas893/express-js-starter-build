@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { generateErrorResponse, generateSuccessResponse } from '../helpers/responseHelper';
-import SecurityAsymmetricKey from '../../models/securityasymmetrickey';
+import SecurityAsymmetricKey from '../models/securityasymmetrickey';
 
 const verifyAccessToken = async (req: Request, res: Response) => {
   try {
