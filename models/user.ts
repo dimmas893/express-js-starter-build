@@ -12,6 +12,12 @@ class User extends Model {
 }
 
 User.init({
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
   nama_lengkap: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -25,9 +31,22 @@ User.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'created_at',
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'updated_at',
+  },
 }, {
   sequelize,
   modelName: 'users',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
 export default User;

@@ -1,25 +1,30 @@
 import { Request, Response } from 'express';
 import SecurityAsymmetricKey from '../models/securityasymmetrickey';
-import { generateErrorResponse, generateSuccessResponse } from '../helpers/responseHelper';
+import ResponseHelper from '../helpers/responseHelper';
 import { validateSecret } from '../helpers/cryptoHelper';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
+import {
+  OK,
+  UNAUTHORIZED,
+  SERVER_GENERAL_ERROR,
+} from '../helpers/responseCode';
 
 const generateAccessToken = async (req: Request, res: Response) => {
   try {
     const { apiKey, secret, audience, privateKey } = req.body;
     console.log('Request to generate access token:', { apiKey, secret, audience, privateKey });
 
-    const key = await SecurityAsymmetricKey.findOne({ where: { APIKey: apiKey } });
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: apiKey } });
     if (!key) {
       console.error('API key not found:', apiKey);
-      return generateErrorResponse(res, '401000', 'Invalid apiKey');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid apiKey');
     }
 
     const isValid = await validateSecret(apiKey, secret, privateKey);
     if (!isValid) {
       console.error('Secret or private key does not match.');
-      return generateErrorResponse(res, '401000', 'Invalid secret or private key');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid secret or private key');
     }
 
     const token = jwt.sign(
@@ -35,10 +40,10 @@ const generateAccessToken = async (req: Request, res: Response) => {
     );
 
     console.log('Access token generated successfully:', { token });
-    generateSuccessResponse(res, '200000', { token });
+    ResponseHelper.generate(res, OK, { token });
   } catch (error) {
     console.error('Error generating access token:', error);
-    generateErrorResponse(res, '500000', (error as Error).message);
+    ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
   }
 };
 

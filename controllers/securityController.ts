@@ -1,17 +1,12 @@
 import { Request, Response } from 'express';
 import SecurityAsymmetricKey from '../models/securityasymmetrickey';
-import { generateKeyPair, hashSecret, saveKeyToFile } from '../helpers/cryptoHelper';
-import { generateErrorResponse, generateSuccessResponse } from '../helpers/responseHelper';
-import { validateSecret } from '../helpers/cryptoHelper';
+import { generateKeyPair, hashSecret, saveKeyToFile, validateSecret } from '../helpers/cryptoHelper';
+import ResponseHelper from '../helpers/responseHelper';
+import { OK, UNAUTHORIZED, SERVER_GENERAL_ERROR } from '../helpers/responseCode';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
 
-import {
-  OK,
-  UNAUTHORIZED,
-  SERVER_GENERAL_ERROR,
-} from '../helpers/responseCode';
 dotenv.config();
 
 const generateAsymmetricKey = async (req: Request, res: Response) => {
@@ -34,34 +29,31 @@ const generateAsymmetricKey = async (req: Request, res: Response) => {
     await saveKeyToFile(publicKey, `logs/credentials/${apiKey}/public.key`);
     await saveKeyToFile(hashedSecret, `logs/credentials/${apiKey}/secret.key`);
 
-
-    generateSuccessResponse(res, OK, { privateKey, publicKey, secret, apiKey });
+    ResponseHelper.generate(res, OK, { items: { privateKey, publicKey, secret, apiKey } });
   } catch (error) {
     console.error('Error generating asymmetric key:', error);
-    generateErrorResponse(res, '500000', (error as Error).message);
+    ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
   }
 };
 
 const generateAccessToken = async (req: Request, res: Response) => {
   try {
-    console.log('Request body:', req.body);
-    const { api_key, secret, audience, private_key } = req.body;
-    console.log('Request to generate access token:', { api_key, secret, audience, private_key });
-
-    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: api_key } });
+    const { apiKey, secret, audience, privateKey } = req.body;
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: apiKey } });
     if (!key) {
-      return generateErrorResponse(res, '401000', 'Invalid api_key');
+      console.error('API key not found:', apiKey);
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid apiKey');
     }
 
-    const isValid = await validateSecret(api_key, secret, private_key);
+    const isValid = await validateSecret(apiKey, secret, privateKey);
     if (!isValid) {
       console.error('Secret or private key does not match.');
-      return generateErrorResponse(res, '401000', 'Invalid secret or private key');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid secret or private key');
     }
 
     const token = jwt.sign(
       {
-        iss: api_key,
+        iss: apiKey,
         aud: audience,
         exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hour
         iat: Math.floor(Date.now() / 1000),
@@ -72,43 +64,42 @@ const generateAccessToken = async (req: Request, res: Response) => {
     );
 
     console.log('Access token generated successfully:', { token });
-    generateSuccessResponse(res, '200000', { token });
+    ResponseHelper.generate(res, OK, { token });
   } catch (error) {
     console.error('Error generating access token:', error);
-    generateErrorResponse(res, '500000', (error as Error).message);
+    ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
   }
 };
-
 
 const verifyAccessToken = async (req: Request, res: Response) => {
   try {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (!token) {
-      return generateErrorResponse(res, '401000', 'No token provided');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'No token provided');
     }
 
     const decodedToken = jwt.decode(token, { complete: true }) as jwt.Jwt | null;
     if (!decodedToken || typeof decodedToken.payload !== 'object') {
-      return generateErrorResponse(res, '401000', 'Invalid token');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid token');
     }
 
     const { iss: apiKey } = decodedToken.payload as jwt.JwtPayload & { iss: string };
     const key = await SecurityAsymmetricKey.findOne({ where: { api_key: apiKey } });
     if (!key) {
       console.error('API key not found:', apiKey);
-      return generateErrorResponse(res, '401000', 'Invalid API key');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid API key');
     }
 
     jwt.verify(token, key.public_key, { algorithms: ['RS256'] }, (err, decoded) => {
       if (err) {
         console.error('Error verifying access token:', err);
-        return generateErrorResponse(res, '401000', 'Invalid token', err.message);
+        return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'Invalid token');
       }
-      generateSuccessResponse(res, '200000', { data: decoded });
+      ResponseHelper.generate(res, OK, { data: decoded });
     });
   } catch (err) {
     console.error('Error verifying access token:', err);
-    generateErrorResponse(res, '500000', (err as Error).message);
+    ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (err as Error).message);
   }
 };
 
@@ -118,17 +109,17 @@ const getCredential = async (req: Request, res: Response) => {
 
     const key = await SecurityAsymmetricKey.findOne({ where: { api_key: api_key } });
     if (!key) {
-      return generateErrorResponse(res, '401000', 'API key not found');
+      return ResponseHelper.generate(res, UNAUTHORIZED, {}, 'API key not found');
     }
 
-    generateSuccessResponse(res, '200000', {
+    ResponseHelper.generate(res, OK, {
       secret: key.secret,
       publicKey: key.public_key,
       privateKey: key.private_key,
     });
   } catch (error) {
     console.error('Error retrieving credentials:', error);
-    generateErrorResponse(res, '500000', (error as Error).message);
+    ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
   }
 };
 

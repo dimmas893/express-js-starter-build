@@ -1,4 +1,3 @@
-// Define the ResponseCode type and constants
 type ResponseCode = '200000' | '401000' | '400001' | '400002' | '500000';
 
 const OK: ResponseCode = '200000';

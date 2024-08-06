@@ -7,7 +7,11 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@migrations/*": ["database/migrations/*"],
+      "@seeders/*": ["database/seeders/*"]
+    }
   },
   "include": ["src/**/*", "models/**/*", "seeders/**/*", "migrations/**/*"],
   "exclude": ["node_modules"]
