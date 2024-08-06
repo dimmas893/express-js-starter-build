@@ -5,6 +5,8 @@ import { paginateArray } from '../helpers/paginationHelper';
 import { formatData, renameKeys } from '../helpers/dataFormatterHelper';
 import { OK, SERVER_GENERAL_ERROR, INVALID_FIELD_FORMAT } from '../helpers/responseCode';
 import { Op } from 'sequelize';
+
+// Fungsi untuk membuat pengguna baru
 const createUser = async (req: Request, res: Response) => {
     try {
         const { nama_lengkap, username, password } = req.body;
@@ -20,8 +22,7 @@ const createUser = async (req: Request, res: Response) => {
     }
 };
 
-
-
+// Fungsi untuk mendapatkan daftar pengguna
 const getUsers = async (req: Request, res: Response) => {
     try {
         const { limit, page, nama_lengkap, username, start_date, end_date, search_query, search_by, sort_by, sort_direction } = req.query;
@@ -33,6 +34,7 @@ const getUsers = async (req: Request, res: Response) => {
             where: {},
         };
 
+        // Menambahkan filter berdasarkan parameter permintaan
         if (nama_lengkap) queryOptions.where.nama_lengkap = nama_lengkap;
         if (username) queryOptions.where.username = username;
         if (start_date && end_date) queryOptions.where.created_at = { [Op.between]: [start_date, end_date] };
@@ -40,7 +42,7 @@ const getUsers = async (req: Request, res: Response) => {
         if (sort_by) queryOptions.order = [[sort_by, sort_direction || 'asc']];
 
         const allData = await User.findAll(queryOptions);
-        const plainData = allData.map(user => user.get({ plain: true })); // Convert Sequelize instances to plain objects
+        const plainData = allData.map(user => user.get({ plain: true })); // Mengonversi instance Sequelize ke objek biasa
         const paginatedResult = paginateArray(plainData, limitNum, pageNum);
 
         let formattedData = formatData(paginatedResult.data, ['created_at', 'updated_at']);
@@ -54,7 +56,7 @@ const getUsers = async (req: Request, res: Response) => {
             paginatedResult.pageCount,
             limitNum,
             paginatedResult.total,
-            '200000',
+            OK,
             'OK'
         );
     } catch (error) {
@@ -62,46 +64,50 @@ const getUsers = async (req: Request, res: Response) => {
     }
 };
 
+// Fungsi untuk mendapatkan pengguna berdasarkan ID
 const getUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const user = await User.findByPk(id);
         if (!user) {
-            ResponseHelper.generate(res, INVALID_FIELD_FORMAT, {}, 'User not found');
+            ResponseHelper.generate(res, INVALID_FIELD_FORMAT, {}, 'Pengguna tidak ditemukan');
             return;
         }
-        ResponseHelper.generate(res, OK, user);
+        ResponseHelper.generate(res, OK, { items: user });
     } catch (error) {
         ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
     }
 };
 
+// Fungsi untuk memperbarui pengguna
 const updateUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const { nama_lengkap, username, password } = req.body;
         const user = await User.findByPk(id);
         if (!user) {
-            ResponseHelper.generate(res, INVALID_FIELD_FORMAT, {}, 'User not found');
+            ResponseHelper.generate(res, INVALID_FIELD_FORMAT, {}, 'Pengguna tidak ditemukan');
             return;
         }
         await user.update({ nama_lengkap, username, password });
-        ResponseHelper.generate(res, OK, user);
+
+        ResponseHelper.generate(res, OK, { items: { nama_lengkap: user.nama_lengkap } });
     } catch (error) {
         ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
     }
 };
 
+// Fungsi untuk menghapus pengguna
 const deleteUser = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const user = await User.findByPk(id);
         if (!user) {
-            ResponseHelper.generate(res, INVALID_FIELD_FORMAT, {}, 'User not found');
+            ResponseHelper.generate(res, INVALID_FIELD_FORMAT, {}, 'Pengguna tidak ditemukan');
             return;
         }
         await user.destroy();
-        ResponseHelper.generate(res, OK, 'User deleted successfully');
+        ResponseHelper.generate(res, OK, {}, 'Pengguna berhasil dihapus');
     } catch (error) {
         ResponseHelper.generate(res, SERVER_GENERAL_ERROR, {}, (error as Error).message);
     }

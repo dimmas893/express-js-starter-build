@@ -10,9 +10,9 @@
     "migrate": "npx sequelize-cli db:migrate",
     "rollback": "npx sequelize-cli db:migrate:undo:all",
     "seed": "npx sequelize-cli db:seed:all",
-    "drop": "npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate:undo:all && npx sequelize-cli db:migrate:undo:all",
-    "reset": "npm run rollback && npm run migrate && npm run seed",
-    "up": "npm run build && npm run drop && npm run migrate && npm run seed"
+    "reseed": "npm run rollback && npm run migrate && npm run seed",
+    "drop": "npx sequelize-cli db:drop",
+    "setup": "npm run build && npm run rollback && npm run migrate && npm run seed"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

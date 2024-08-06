@@ -12,7 +12,7 @@ dotenv.config();
 const generateAsymmetricKey = async (req: Request, res: Response) => {
   try {
     const { publicKey, privateKey } = generateKeyPair();
-    const apiKey = crypto.randomUUID(); // Note: `crypto.randomUUID` is available from Node.js v14.17.0 onwards.
+    const apiKey = crypto.randomUUID(); 
     const secret = crypto.randomBytes(20).toString('hex');
     const hashedSecret = await hashSecret(secret);
 

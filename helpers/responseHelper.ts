@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { ResponseCode, getMessage } from './responseCode';
 
 interface PaginatedResponse {
-  responseCode: string;
+  response_code: string;
   response_message: string;
   items: any[];
   currentPage: number;
@@ -35,22 +35,22 @@ class ResponseHelper {
     lastPage: number,
     perPage: number,
     total: number,
-    responseCode: ResponseCode = '200000',
+    response_code: ResponseCode = '200000',
     message?: string
   ): Response {
-    const response_message = message || getMessage(responseCode);
+    const response_message = message || getMessage(response_code);
 
     const response: PaginatedResponse = {
-      responseCode: responseCode,
-      response_message: response_message,
-      items: items,
-      currentPage: currentPage,
-      lastPage: lastPage,
-      perPage: perPage,
-      total: total,
+      response_code,
+      response_message,
+      items,
+      currentPage,
+      lastPage,
+      perPage,
+      total,
     };
 
-    return res.status(parseInt(responseCode.slice(0, 3), 10)).json(response);
+    return res.status(parseInt(response_code.slice(0, 3), 10)).json(response);
   }
 }
 
