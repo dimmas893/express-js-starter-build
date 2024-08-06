@@ -3,36 +3,49 @@ import sequelize from './index';
 
 class SecurityAsymmetricKey extends Model {
   public id!: number;
-  public APIKey!: string;
-  public PrivateKey!: string;
-  public PublicKey!: string;
-  public Secret!: string;
+  public api_key!: string;
+  public private_key!: string;
+  public public_key!: string;
+  public secret!: string;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly created_at!: Date;
+  public readonly updated_at!: Date;
 }
 
 SecurityAsymmetricKey.init({
-  APIKey: {
+  api_key: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
   },
-  PrivateKey: {
+  private_key: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  PublicKey: {
+  public_key: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  Secret: {
+  secret: {
     type: DataTypes.TEXT,
     allowNull: false,
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
   },
 }, {
   sequelize,
-  modelName: 'SecurityAsymmetricKey',
+  modelName: 'security_asymmetric_keys',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
 export default SecurityAsymmetricKey;

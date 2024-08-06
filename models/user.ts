@@ -3,31 +3,31 @@ import sequelize from './index';
 
 class User extends Model {
   public id!: number;
-  public NamaLengkap!: string;
-  public Username!: string;
-  public Password!: string;
+  public nama_lengkap!: string;
+  public username!: string;
+  public password!: string;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  public readonly created_at!: Date;
+  public readonly updated_at!: Date;
 }
 
 User.init({
-  NamaLengkap: {
+  nama_lengkap: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  Username: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
   },
-  Password: {
+  password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 }, {
   sequelize,
-  modelName: 'User',
+  modelName: 'users',
 });
 
 export default User;

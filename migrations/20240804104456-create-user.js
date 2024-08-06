@@ -7,24 +7,24 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      NamaLengkap: {
+      nama_lengkap: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      Username: {
+      username: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      Password: {
+      password: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },

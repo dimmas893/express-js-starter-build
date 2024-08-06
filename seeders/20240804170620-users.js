@@ -7,11 +7,11 @@ module.exports = {
 
     for (let i = 0; i < 100; i++) {
       users.push({
-        NamaLengkap: faker.person.fullName(),
-        Username: faker.internet.userName(), // Ensure unique usernames
+        nama_lengkap: faker.person.fullName(),
+        username: faker.internet.userName(), // Ensure unique usernames
         Password: faker.internet.password(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
       });
     }
 

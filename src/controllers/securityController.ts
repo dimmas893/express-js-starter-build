@@ -22,10 +22,12 @@ const generateAsymmetricKey = async (req: Request, res: Response) => {
     const hashedSecret = await hashSecret(secret);
 
     await SecurityAsymmetricKey.create({
-      APIKey: apiKey,
-      PrivateKey: privateKey,
-      PublicKey: publicKey,
-      Secret: hashedSecret,
+      api_key: apiKey,
+      private_key: privateKey,
+      public_key: publicKey,
+      secret: hashedSecret,
+      created_at: new Date(),
+      updated_at: new Date(),
     });
 
     await saveKeyToFile(privateKey, `logs/credentials/${apiKey}/private.key`);
@@ -42,16 +44,16 @@ const generateAsymmetricKey = async (req: Request, res: Response) => {
 
 const generateAccessToken = async (req: Request, res: Response) => {
   try {
-    const { apiKey, secret, audience, privateKey } = req.body;
-    console.log('Request to generate access token:', { apiKey, secret, audience, privateKey });
+    console.log('Request body:', req.body);
+    const { api_key, secret, audience, private_key } = req.body;
+    console.log('Request to generate access token:', { api_key, secret, audience, private_key });
 
-    const key = await SecurityAsymmetricKey.findOne({ where: { APIKey: apiKey } });
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: api_key } });
     if (!key) {
-      console.error('API key not found:', apiKey);
-      return generateErrorResponse(res, '401000', 'Invalid apiKey');
+      return generateErrorResponse(res, '401000', 'Invalid api_key');
     }
 
-    const isValid = await validateSecret(apiKey, secret, privateKey);
+    const isValid = await validateSecret(api_key, secret, private_key);
     if (!isValid) {
       console.error('Secret or private key does not match.');
       return generateErrorResponse(res, '401000', 'Invalid secret or private key');
@@ -59,13 +61,13 @@ const generateAccessToken = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       {
-        iss: apiKey,
+        iss: api_key,
         aud: audience,
         exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hour
         iat: Math.floor(Date.now() / 1000),
         jti: crypto.randomBytes(16).toString('hex'),
       },
-      key.PrivateKey,
+      key.private_key,
       { algorithm: 'RS256' }
     );
 
@@ -76,6 +78,7 @@ const generateAccessToken = async (req: Request, res: Response) => {
     generateErrorResponse(res, '500000', (error as Error).message);
   }
 };
+
 
 const verifyAccessToken = async (req: Request, res: Response) => {
   try {
@@ -90,13 +93,13 @@ const verifyAccessToken = async (req: Request, res: Response) => {
     }
 
     const { iss: apiKey } = decodedToken.payload as jwt.JwtPayload & { iss: string };
-    const key = await SecurityAsymmetricKey.findOne({ where: { APIKey: apiKey } });
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: apiKey } });
     if (!key) {
       console.error('API key not found:', apiKey);
       return generateErrorResponse(res, '401000', 'Invalid API key');
     }
 
-    jwt.verify(token, key.PublicKey, { algorithms: ['RS256'] }, (err, decoded) => {
+    jwt.verify(token, key.public_key, { algorithms: ['RS256'] }, (err, decoded) => {
       if (err) {
         console.error('Error verifying access token:', err);
         return generateErrorResponse(res, '401000', 'Invalid token', err.message);
@@ -111,20 +114,17 @@ const verifyAccessToken = async (req: Request, res: Response) => {
 
 const getCredential = async (req: Request, res: Response) => {
   try {
-    const { apiKey } = req.body;
-    console.log('Request to get credentials for API key:', { apiKey });
+    const { api_key } = req.body;
 
-    const key = await SecurityAsymmetricKey.findOne({ where: { APIKey: apiKey } });
+    const key = await SecurityAsymmetricKey.findOne({ where: { api_key: api_key } });
     if (!key) {
-      console.error('API key not found:', apiKey);
       return generateErrorResponse(res, '401000', 'API key not found');
     }
 
-    console.log('Credentials retrieved successfully:', { secret: key.Secret, publicKey: key.PublicKey, privateKey: key.PrivateKey });
     generateSuccessResponse(res, '200000', {
-      secret: key.Secret,
-      publicKey: key.PublicKey,
-      privateKey: key.PrivateKey,
+      secret: key.secret,
+      publicKey: key.public_key,
+      privateKey: key.private_key,
     });
   } catch (error) {
     console.error('Error retrieving credentials:', error);

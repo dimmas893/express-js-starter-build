@@ -23,7 +23,7 @@ const verifyAccessToken = async (req: Request, res: Response) => {
       return generateErrorResponse(res, '401000', 'Invalid API key');
     }
 
-    jwt.verify(token, key.PublicKey, { algorithms: ['RS256'] }, (err, decoded) => {
+    jwt.verify(token, key.public_key, { algorithms: ['RS256'] }, (err, decoded) => {
       if (err) {
         console.error('Error verifying access token:', err);
         return generateErrorResponse(res, '401000', 'Invalid token', err.message);

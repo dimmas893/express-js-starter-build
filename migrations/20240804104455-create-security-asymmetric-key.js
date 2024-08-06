@@ -1,34 +1,34 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('security_Asymmetric_keys', {
+    await queryInterface.createTable('security_asymmetric_keys', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      APIKey: {
+      api_key: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      PrivateKey: {
+      private_key: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      PublicKey: {
+      public_key: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      Secret: {
+      secret: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
       },
@@ -36,6 +36,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('SecurityAsymmetricKeys');
+    await queryInterface.dropTable('security_asymmetric_keys');
   }
 };

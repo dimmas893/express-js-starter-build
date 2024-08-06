@@ -2,10 +2,11 @@
   "name": "starter-build-app",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon",
+    "start": "npm run build && node dist/src/index.js",
+    "dev": "nodemon",
     "migrate": "npx sequelize-cli db:migrate",
     "rollback": "npx sequelize-cli db:migrate:undo:all",
     "seed": "npx sequelize-cli db:seed:all",

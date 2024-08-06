@@ -30,7 +30,7 @@ const generateAccessToken = async (req: Request, res: Response) => {
         iat: Math.floor(Date.now() / 1000),
         jti: crypto.randomBytes(16).toString('hex'),
       },
-      key.PrivateKey,
+      key.private_key,
       { algorithm: 'RS256' }
     );
 
